@@ -252,6 +252,22 @@ describe('InstagramUnifiedProvider account selection', () => {
     ]);
   });
 
+  it('falls back to INSTAGRAM_UNIFIED_ACCOUNT_IDS when Meta lists no account', async () => {
+    process.env.INSTAGRAM_UNIFIED_ACCOUNT_IDS = ` ${IG_ID} ,`;
+    mockGraph([
+      {
+        match: (url) => url.includes('assigned_instagram_accounts'),
+        body: { data: [] },
+      },
+      ...accountRoutes().slice(2),
+    ]);
+
+    const pages = await new InstagramUnifiedProvider().pages(TOKEN);
+
+    expect(pages.map((p) => p.id)).toEqual([IG_ID]);
+    expect(pages[0].username).toBe('xenobase.official');
+  });
+
   it('stores the selected account with the system user token', async () => {
     mockGraph(accountRoutes());
 

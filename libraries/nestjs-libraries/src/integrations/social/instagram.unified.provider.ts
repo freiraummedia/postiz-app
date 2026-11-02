@@ -196,6 +196,17 @@ export class InstagramUnifiedProvider
       nextUrl = response.paging?.next;
     }
 
+    // Without business_management Meta returns an empty list here, although the
+    // token can access the shared account. Fall back to the configured IDs.
+    if (!accounts.length && process.env.INSTAGRAM_UNIFIED_ACCOUNT_IDS) {
+      accounts.push(
+        ...process.env.INSTAGRAM_UNIFIED_ACCOUNT_IDS.split(',')
+          .map((id) => id.trim())
+          .filter(Boolean)
+          .map((id) => ({ id }))
+      );
+    }
+
     return Promise.all(
       accounts.map(async (account) => {
         const information = await this.accountInformation(
