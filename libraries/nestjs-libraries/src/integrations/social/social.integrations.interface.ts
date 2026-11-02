@@ -223,6 +223,9 @@ export interface SocialProvider
   >;
   name: string;
   toolTip?: string;
+  // providers that need extra configuration (env) hide themselves from the
+  // add-channel screen until it is set
+  isEnabled?(): boolean;
   oneTimeToken?: boolean;
   isBetweenSteps: boolean;
   scopes: string[];
